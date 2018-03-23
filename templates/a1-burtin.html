@@ -76,7 +76,9 @@
     var visSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
         "title": "Effectiveness of Antibiotics on Bacteria (Burtin, 1951)",
-        "data": { "url": "a1-burtin.json", "format": { "type": "json" } },
+        "data": {
+            "url": "static/a1-burtin/a1-burtin.json",
+            "format": { "type": "json" } },
         "transform": [
             { "calculate": "log(datum.Minimum_Inhibitory_Concentration)",
                 "as": "log_MIC" },
