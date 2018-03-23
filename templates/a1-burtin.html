@@ -9,90 +9,213 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.css">
 
     <style media="screen">
-        /* Add space between Vega-Embed links  */
-        .vega-actions a {
-            margin-right: 5px;
+        body {
+            font-family: "Lato", sans-serif;
+        }
+        .anno-effect {
+            position: relative;
+            left: 250px;
+            top: -295px;
+            font-style: italic;
+            font-size: 12px;
+        }
+        .anno-effect span {
+            display: inline-block;
+        }
+        .anno-right {
+            margin-left: 450px;
+        }
+
+        header {
+            background-color: ghostwhite;
+            padding: 20px 100px 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 4px 0 4px;
+        }
+        header p {
+            margin: 4px 0 4px;
+        }
+        footer {
+            background-color: ghostwhite;
+            color: darkgray;
+            padding: 5px 100px 5px;
         }
     </style>
 
 </head>
 <body>
 
-<h1>Visualization of Antibiotics Data</h1>
-<p>Duo Yang</p>
+<header>
+    <h1>Visualization of Antibiotics Data (Burtin, 1951)</h1>
+    <p>Duo Yang</p>
+</header>
 
 <div id="data-viz"></div>
+<div class="anno-effect">
+    <span class="anno-left">&larr; Less Effective</span>
+    <span class="anno-right">More Effective &rarr;</span>
+</div>
+
+<footer>
+    <p>&copy; 2018 Duo Yang</p>
+</footer>
 
 <script>
     //initiate renderer, use it for all vega-embed.
-    var opt = {"renderer": "svg", mode: "vega-lite"};
-    var width = 600;
+    var opt = {"renderer": "svg", mode: "vega-lite", actions: false};
+    var width = 700;
 
     // Visualization
     var visSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "title": "MIC of Antibiotics on Bacteria",
-        "data": {
-            "url": "static/a1-burtin/a1-burtin.json",
-            "format": {"type": "json"}
-        },
+        "title": "Effectiveness of Antibiotics on Bacteria (Burtin, 1951)",
+        "data": { "url": "a1-burtin.json", "format": { "type": "json" } },
+        "transform": [
+            { "calculate": "log(datum.Minimum_Inhibitory_Concentration)",
+                "as": "log_MIC" },
+            { "calculate": "datum.Gram_Staining == 'positive'? 1 : 0",
+                "as": "is_Pos" }
+        ],
         "vconcat": [
-          {
-            "width": width,
-            "mark": {"type": "point", "filled": true},
-            "selection":
             {
-              "brush":
-              {
-                "type": "interval",
-                "on": "[mousedown, window:mouseup] > window:mousemove!",
-                "encodings": ["x", "y"],
-                "translate": "[mousedown, window:mouseup] > window:mousemove!",
-                "zoom": "wheel!",
-                "mark": {"fill": "#333", "fillOpacity": 0.125,
-                         "stroke": "white"},
-                "resolve": "global"
-              }
-            },
-            "encoding": {
-              "x":
-              {
-                "field": "Bacteria", "type": "nominal",
-                "sort":
-                {
-                  "op": "mean", "order": "descending",
-                  "field": "Minimum_Inhibitory_Concentration"
+                "width": width,
+                "transform": [
+                    { "filter": "datum.Gram_Staining == 'positive'"}
+                ],
+                "mark": { "type": "circle", "filled": true },
+                "encoding": {
+                    "x": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative",
+                        "sort": "descending",
+                        "axis": {
+                            "title": "Minimum Inhibitory Concentration (MIC)",
+                            "titlePadding": 10,
+                            "orient": "bottom",
+                            "offset": 10
+                        },
+                        "scale": { "type": "log", "domain": [0.0001, 1000] }
+                    },
+                    "y": {
+                        "field": "Bacteria",
+                        "type": "nominal",
+                        "sort": {
+                            "op": "max", "field": "is_Pos"
+                        },
+                        "axis": {
+                            "title": "Gram Staining Positive Bacteria (+)",
+                            "titlePadding": 40,
+                            "orient": "right",
+                            "offset": 10
+                        }
+                    },
+                    "color": {
+                        "field": "Antibiotics",
+                        "type": "nominal",
+                        "legend": {
+                            "orient": "left",
+                            "padding": 40,
+                            "offset": -45
+                        }
+                    },
+                    "size": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative",
+                        "legend": {
+                            "title": "MIC",
+                            "orient": "left",
+                            "padding": 100,
+                            "offset": -80
+                        },
+                        "scale": { "type": "log", "range": [300, 30] }
+                    },
+                    "tooltip": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative"
+                    }
                 }
-              },
-              "y":
-              {
-                "field": "Minimum_Inhibitory_Concentration",
-                "type": "quantitative"},
-                "color": {"field": "Gram_Staining", "type": "nominal"},
-                "tooltip": {"field": "Antibiotics", "type": "nominal"}
+            },
+            {
+                "width": width,
+                "transform": [
+                    { "filter": "datum.Gram_Staining == 'negative'"}
+                ],
+                "mark": { "type": "circle", "filled": true },
+                "encoding": {
+                    "x": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative",
+                        "sort": "descending",
+                        "axis": {
+                            "title": null,
+                            "orient": "top",
+                            "offset": 10
+                        },
+                        "scale": { "type": "log", "domain": [0.0001, 10000] }
+                    },
+                    "y": {
+                        "field": "Bacteria",
+                        "type": "nominal",
+                        "sort": {
+                            "op": "max", "field": "is_Pos"
+                        },
+                        "axis": {
+                            "title": "Gram Staining Negative Bacteria (-)",
+                            "titlePadding": 15,
+                            "orient": "right",
+                            "offset": 10
+                        }
+                    },
+                    "color": {
+                        "field": "Antibiotics",
+                        "type": "nominal",
+                        "legend": null
+                    },
+                    "size": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative",
+                        "legend": null,
+                        "scale": { "type": "log", "range": [300, 30] }
+                    },
+                    "tooltip": {
+                        "field": "Minimum_Inhibitory_Concentration",
+                        "type": "quantitative"
+                    }
+                }
             }
-          },
-          {
-            "width": width,
-            "mark": {"type": "point", "filled": true},
-            "transform": [{"filter": {"selection": "brush"}}],
-            "encoding": {
-              "x": {"field": "Antibiotics", "type": "nominal",
-                    "sort": {"op": "mean", "order": "descending",
-                             "field": "Minimum_Inhibitory_Concentration"}
-                   },
-              "y": {"field": "Minimum_Inhibitory_Concentration",
-                    "type": "quantitative"
-                   },
-              "color": {"field": "Gram_Staining", "type": "nominal"},
-              "tooltip": {"field": "Bacteria", "type": "nominal"}
+        ],
+        "config": {
+            "axis": {
+                "titleFont": "Lato",
+                "titleFontSize": 16,
+                "labelFont": "Lato"
+            },
+            "axisX": {
+                "gridOpacity": 0.5,
+                "labelFontSize": 10
+            },
+            "axisY": {
+                "titleAlign": "left",
+                "titleAngle": 0,
+                "labelFontSize": 12
+            },
+            "legend": {
+                "titleFont": "Lato",
+                "labelFont": "Lato"
+            },
+            "title": {
+                "font": "Lato",
+                "fontSize": 20,
+                "offset": 10
             }
-          }
-        ]
+        }
     };
     vegaEmbed("#data-viz", visSpec, opt);
 
