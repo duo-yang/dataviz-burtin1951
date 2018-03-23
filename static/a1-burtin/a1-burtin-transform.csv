@@ -1,0 +1,49 @@
+Bacteria,Antibiotics,Minimum Inhibitory Concentration,Gram Staining
+Aerobacter aerogenes,Penicilin,870,negative
+Brucella abortus,Penicilin,1,negative
+Brucella anthracis,Penicilin,0.001,positive
+Diplococcus pneumoniae,Penicilin,0.005,positive
+Escherichia coli,Penicilin,100,negative
+Klebsiella pneumoniae,Penicilin,850,negative
+Mycobacterium tuberculosis,Penicilin,800,negative
+Proteus vulgaris,Penicilin,3,negative
+Pseudomonas aeruginosa ,Penicilin,850,negative
+Salmonella (Eberthella) typhosa ,Penicilin,1,negative
+Salmonella schottmuelleri ,Penicilin,10,negative
+Staphylococcus albus ,Penicilin,0.007,positive
+Staphylococcus aureus ,Penicilin,0.03,positive
+Streptococcus fecalis ,Penicilin,1,positive
+Streptococcus hemolyticus ,Penicilin,0.001,positive
+Streptococcus viridans,Penicilin,0.005,positive
+Aerobacter aerogenes,Streptomycin,1,negative
+Brucella abortus,Streptomycin,2,negative
+Brucella anthracis,Streptomycin,0.01,positive
+Diplococcus pneumoniae,Streptomycin,11,positive
+Escherichia coli,Streptomycin,0.4,negative
+Klebsiella pneumoniae,Streptomycin,1.2,negative
+Mycobacterium tuberculosis,Streptomycin,5,negative
+Proteus vulgaris,Streptomycin,0.1,negative
+Pseudomonas aeruginosa ,Streptomycin,2,negative
+Salmonella (Eberthella) typhosa ,Streptomycin,0.4,negative
+Salmonella schottmuelleri ,Streptomycin,0.8,negative
+Staphylococcus albus ,Streptomycin,0.1,positive
+Staphylococcus aureus ,Streptomycin,0.03,positive
+Streptococcus fecalis ,Streptomycin,1,positive
+Streptococcus hemolyticus ,Streptomycin,14,positive
+Streptococcus viridans,Streptomycin,10,positive
+Aerobacter aerogenes,Neomycin,1.6,negative
+Brucella abortus,Neomycin,0.02,negative
+Brucella anthracis,Neomycin,0.007,positive
+Diplococcus pneumoniae,Neomycin,10,positive
+Escherichia coli,Neomycin,0.1,negative
+Klebsiella pneumoniae,Neomycin,1,negative
+Mycobacterium tuberculosis,Neomycin,2,negative
+Proteus vulgaris,Neomycin,0.1,negative
+Pseudomonas aeruginosa ,Neomycin,0.4,negative
+Salmonella (Eberthella) typhosa ,Neomycin,0.008,negative
+Salmonella schottmuelleri ,Neomycin,0.09,negative
+Staphylococcus albus ,Neomycin,0.001,positive
+Staphylococcus aureus ,Neomycin,0.001,positive
+Streptococcus fecalis ,Neomycin,0.1,positive
+Streptococcus hemolyticus ,Neomycin,10,positive
+Streptococcus viridans,Neomycin,40,positive

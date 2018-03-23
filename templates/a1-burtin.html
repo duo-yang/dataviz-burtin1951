@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Duo Yang - Antibiotics Data Viz</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.4/vega-lite.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.css">
+
+    <style media="screen">
+        /* Add space between Vega-Embed links  */
+        .vega-actions a {
+            margin-right: 5px;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>Visualization of Antibiotics Data</h1>
+<p>Duo Yang</p>
+
+<div id="data-viz"></div>
+
+<script>
+    //initiate renderer, use it for all vega-embed.
+    var opt = {"renderer": "svg", mode: "vega-lite"};
+    var width = 600;
+
+    // Visualization
+    var visSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "title": "MIC of Antibiotics on Bacteria",
+        "data": {
+            "url": "static/a1-burtin/a1-burtin.json",
+            "format": {"type": "json"}
+        },
+        "vconcat": [
+          {
+            "width": width,
+            "mark": {"type": "point", "filled": true},
+            "selection":
+            {
+              "brush":
+              {
+                "type": "interval",
+                "on": "[mousedown, window:mouseup] > window:mousemove!",
+                "encodings": ["x", "y"],
+                "translate": "[mousedown, window:mouseup] > window:mousemove!",
+                "zoom": "wheel!",
+                "mark": {"fill": "#333", "fillOpacity": 0.125,
+                         "stroke": "white"},
+                "resolve": "global"
+              }
+            },
+            "encoding": {
+              "x":
+              {
+                "field": "Bacteria", "type": "nominal",
+                "sort":
+                {
+                  "op": "mean", "order": "descending",
+                  "field": "Minimum_Inhibitory_Concentration"
+                }
+              },
+              "y":
+              {
+                "field": "Minimum_Inhibitory_Concentration",
+                "type": "quantitative"},
+                "color": {"field": "Gram_Staining", "type": "nominal"},
+                "tooltip": {"field": "Antibiotics", "type": "nominal"}
+            }
+          },
+          {
+            "width": width,
+            "mark": {"type": "point", "filled": true},
+            "transform": [{"filter": {"selection": "brush"}}],
+            "encoding": {
+              "x": {"field": "Antibiotics", "type": "nominal",
+                    "sort": {"op": "mean", "order": "descending",
+                             "field": "Minimum_Inhibitory_Concentration"}
+                   },
+              "y": {"field": "Minimum_Inhibitory_Concentration",
+                    "type": "quantitative"
+                   },
+              "color": {"field": "Gram_Staining", "type": "nominal"},
+              "tooltip": {"field": "Bacteria", "type": "nominal"}
+            }
+          }
+        ]
+    };
+    vegaEmbed("#data-viz", visSpec, opt);
+
+</script>
+
+</body>
+</html>
