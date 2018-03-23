@@ -1,2 +1,2 @@
-# dataviz-burtin1951
+# Data Visualization - Antibiotics
 Data Visualization of Antibiotics Data (Burtin, 1951)
