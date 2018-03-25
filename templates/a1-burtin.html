@@ -4,31 +4,115 @@
     <meta charset="UTF-8">
     <title>Duo Yang - Antibiotics Data Viz</title>
 
+    <!-- Vega-Lite -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.4/vega-lite.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/vega-tooltip/0.4.4/vega-tooltip.css">
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous">
+    </script>
+
+    <script>
+        window.jQuery || document.write(
+            '<script src="static/js/vendor/jquery-3.2.1.min.js"><\/script>')
+    </script>
 
     <style media="screen">
         body {
             font-family: "Lato", sans-serif;
         }
-        .anno-effect {
+        main {
             position: relative;
-            left: 250px;
-            top: -295px;
-            font-style: italic;
+            padding: 0 100px 20px;
+        }
+        .anno {
+            position: absolute;
             font-size: 12px;
         }
-        .anno-effect span {
+        .left {
             display: inline-block;
+            font-style: italic;
+            top: 248px;
+            left: 310px;
         }
-        .anno-right {
-            margin-left: 450px;
+        .right {
+            display: inline-block;
+            font-style: italic;
+            top: 248px;
+            left: 880px;
+        }
+
+        .dp {
+            transition: fill 300ms ease;
+        }
+
+        .ch {
+            display: block;
+            position: absolute;
+            cursor: pointer;
+            user-select: none;
+        }
+        .neo.ch {
+            top: 64px;
+            left: 1045px;
+        }
+        .pen.ch {
+            top: 85px;
+            left: 1045px;
+        }
+        .str.ch {
+            top: 106px;
+            left: 1045px;
+        }
+        .ch input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 13px;
+            width: 13px;
+            background-color: ghostwhite;
+            border: 1.5px solid silver;
+            border-radius: 3px;
+        }
+        .ch:hover input~.checkmark {
+            background-color: silver;
+            border-color: silver;
+        }
+        .ch input:checked~.checkmark {
+            border-color: silver;
+            background-color: silver;
+        }
+        .checkmark:after {
+          content: "";
+          position: absolute;
+          display: none;
+        }
+        .ch input:checked~.checkmark:after {
+          display: block;
+        }
+        .ch .checkmark:after {
+            top: 1px;
+            left: 3px;
+            width: 4px;
+            height: 8px;
+            border: solid ghostwhite;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
         }
 
         header {
@@ -57,11 +141,23 @@
     <p>Duo Yang</p>
 </header>
 
-<div id="data-viz"></div>
-<div class="anno-effect">
-    <span class="anno-left">&larr; Less Effective</span>
-    <span class="anno-right">More Effective &rarr;</span>
-</div>
+<main>
+    <div id="data-viz"></div>
+    <span class="anno left">&larr; Less Effective</span>
+    <span class="anno right">More Effective &rarr;</span>
+    <label class="neo ch">
+        <input type="checkbox" title="Neomycin" checked>
+        <span class="checkmark"></span>
+    </label>
+    <label class="pen ch">
+        <input type="checkbox" title="Penicilin" checked>
+        <span class="checkmark"></span>
+    </label>
+    <label class="str ch">
+        <input type="checkbox" title="Sreptomycin" checked>
+        <span class="checkmark"></span>
+    </label>
+</main>
 
 <footer>
     <p>&copy; 2018 Duo Yang</p>
@@ -79,18 +175,15 @@
         "data": {
             "url": "static/a1-burtin/a1-burtin.json",
             "format": { "type": "json" } },
-        "transform": [
-            { "calculate": "log(datum.Minimum_Inhibitory_Concentration)",
-                "as": "log_MIC" },
-            { "calculate": "datum.Gram_Staining == 'positive'? 1 : 0",
-                "as": "is_Pos" }
-        ],
         "vconcat": [
             {
                 "width": width,
                 "transform": [
-                    { "filter": "datum.Gram_Staining == 'positive'"}
+                    { "filter": "datum.Gram_Staining == 'negative'"}
                 ],
+                "selection": {
+                    "grid": { "type": "interval", "bind": "scales" }
+                },
                 "mark": { "type": "circle", "filled": true },
                 "encoding": {
                     "x": {
@@ -99,22 +192,19 @@
                         "sort": "descending",
                         "axis": {
                             "title": "Minimum Inhibitory Concentration (MIC)",
-                            "titlePadding": 10,
+                            "labelPadding": 15,
                             "orient": "bottom",
                             "offset": 10
                         },
-                        "scale": { "type": "log", "domain": [0.0001, 1000] }
+                        "scale": { "type": "log", "domain": [0.00001, 1000] }
                     },
                     "y": {
                         "field": "Bacteria",
                         "type": "nominal",
-                        "sort": {
-                            "op": "max", "field": "is_Pos"
-                        },
                         "axis": {
-                            "title": "Gram Staining Positive Bacteria (+)",
-                            "titlePadding": 40,
-                            "orient": "right",
+                            "title": "Gram Staining Negative (-)",
+                            "titlePadding": 10,
+                            "orient": "left",
                             "offset": 10
                         }
                     },
@@ -122,33 +212,35 @@
                         "field": "Antibiotics",
                         "type": "nominal",
                         "legend": {
-                            "orient": "left",
-                            "padding": 40,
-                            "offset": -45
+                            "orient": "right",
+                            "padding": 10,
+                            "entryPadding": 10,
+                            "offset": -265,
+                            "zindex": 1
                         }
                     },
                     "size": {
                         "field": "Minimum_Inhibitory_Concentration",
                         "type": "quantitative",
                         "legend": {
-                            "title": "MIC",
-                            "orient": "left",
-                            "padding": 100,
-                            "offset": -80
+                            "title": "Effectiveness (MIC)",
+                            "orient": "top-right",
+                            "tickCount": 3,
+                            "padding": 10,
+                            "offset": 0
                         },
-                        "scale": { "type": "log", "range": [300, 30] }
-                    },
-                    "tooltip": {
-                        "field": "Minimum_Inhibitory_Concentration",
-                        "type": "quantitative"
+                        "scale": { "type": "log", "range": [600, 60] }
                     }
                 }
             },
             {
                 "width": width,
                 "transform": [
-                    { "filter": "datum.Gram_Staining == 'negative'"}
+                    { "filter": "datum.Gram_Staining == 'positive'"}
                 ],
+                "selection": {
+                    "grid": { "type": "interval", "bind": "scales" }
+                },
                 "mark": { "type": "circle", "filled": true },
                 "encoding": {
                     "x": {
@@ -158,20 +250,18 @@
                         "axis": {
                             "title": null,
                             "orient": "top",
+                            "labels": false,
                             "offset": 10
                         },
-                        "scale": { "type": "log", "domain": [0.0001, 10000] }
+                        "scale": { "type": "log", "domain": [0.00001, 1000] }
                     },
                     "y": {
                         "field": "Bacteria",
                         "type": "nominal",
-                        "sort": {
-                            "op": "max", "field": "is_Pos"
-                        },
                         "axis": {
-                            "title": "Gram Staining Negative Bacteria (-)",
-                            "titlePadding": 15,
-                            "orient": "right",
+                            "title": "Gram Staining Positive (+)",
+                            "titlePadding": 10,
+                            "orient": "left",
                             "offset": 10
                         }
                     },
@@ -184,11 +274,7 @@
                         "field": "Minimum_Inhibitory_Concentration",
                         "type": "quantitative",
                         "legend": null,
-                        "scale": { "type": "log", "range": [300, 30] }
-                    },
-                    "tooltip": {
-                        "field": "Minimum_Inhibitory_Concentration",
-                        "type": "quantitative"
+                        "scale": { "type": "log", "range": [600, 60] }
                     }
                 }
             }
@@ -196,21 +282,34 @@
         "config": {
             "axis": {
                 "titleFont": "Lato",
-                "titleFontSize": 16,
+                "titleFontSize": 14,
                 "labelFont": "Lato"
             },
             "axisX": {
                 "gridOpacity": 0.5,
+                "titleX": 900,
+                "titleY": 18,
                 "labelFontSize": 10
             },
             "axisY": {
-                "titleAlign": "left",
+                "grid": true,
+                "gridOpacity": 0.8,
+                "zindex": 0,
+                "titleAlign": "right",
                 "titleAngle": 0,
+                "titleX": -8,
+                "titleY": 5,
                 "labelFontSize": 12
             },
             "legend": {
                 "titleFont": "Lato",
-                "labelFont": "Lato"
+                "titleFontSize": 12,
+                "titlePadding": 10,
+                "labelFont": "Lato",
+                "labelFontSize": 10
+            },
+            "scale": {
+                "pointPadding": 1.5
             },
             "title": {
                 "font": "Lato",
@@ -219,8 +318,98 @@
             }
         }
     };
-    vegaEmbed("#data-viz", visSpec, opt);
 
+    // Tooltip
+    var toolSpec = {
+        showAllFields: false,
+        fields: [
+            { field: "Bacteria", formatType: "string",
+                title: "Bacteria" },
+            { field: "Antibiotics", formatType: "string",
+                title: "Antibiotics" },
+            { field: "Minimum_Inhibitory_Concentration", formatType: "number",
+                title: "MIC" }
+        ],
+        delay: 250
+    };
+
+    vegaEmbed("#data-viz", visSpec, opt)
+        .then(function(result) {
+            // result.view is the Vega View,
+            // vlSpec is the original Vega-Lite specification
+            vegaTooltip.vegaLite(result.view, visSpec, toolSpec);
+        }).catch(console.error);
+
+</script>
+
+<script>
+    $(setTimeout(function() {
+        var num = 3;
+        var antis = ["neo", "str", "pen"];
+        var colos = ["rgb(76, 120, 168)", "rgb(228, 87, 86)",
+                     "rgb(245, 133, 24)"];
+
+        // Get data points
+        $(".mark-symbol.role-mark path").addClass("data");
+        $(".data").each(function (index, value) {
+            var $ele = $(value);
+            for (var i=0; i<num; i++) {
+                if ($ele.css("fill") === colos[i]) {
+                    $ele.addClass("dp " + antis[i])
+                        .css({"position": "absolute"});
+                    break;
+                }
+            }
+        });
+
+        // Get legend
+        $(".mark-symbol.role-legend-symbol path").addClass("leg-s");
+        $(".leg-s").each(function (index, value) {
+            var $ele = $(value);
+            for (var i=0; i<num; i++) {
+                if ($ele.css("fill") === colos[i]) {
+                    $ele.addClass("le " + antis[i])
+                        .css({"position": "absolute"});
+                    break;
+                }
+            }
+        });
+
+        // Data point interactivity
+        var $group = [$(".neo.dp"), $(".str.dp"), $(".pen.dp")];
+        var focus = [false, false, false];
+        $(".dp").click(function () {
+            var $this = $(this);
+            for (var i=0; i<num; i++) {
+                if ($this.hasClass(antis[i])) {
+                    $group[i].css({"fill": colos[i]});
+                    var j = 0;
+                    while (j < num) {
+                        if (j !== i) {
+                            focus[i]? $group[j].css({"fill": colos[j]}):
+                                $group[j].css({"fill": "lightgray"});
+                            focus[j] = false;
+                        }
+                        j++;
+                    }
+                    focus[i] = !focus[i];
+                    break;
+                }
+            }
+        });
+
+        // Legend checkbox selection
+        $(".ch").change(function () {
+            var $this = $(this);
+            for (var i=0; i<num; i++) {
+                if ($this.hasClass(antis[i])) {
+                    $group[i].toggle(300);
+                    break;
+                }
+            }
+        });
+
+    }, 1000));
 </script>
 
 </body>
